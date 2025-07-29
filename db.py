@@ -185,7 +185,7 @@ class SQLQueryBuilder:
         self._where_conditions.append(f'"{col}" LIKE "{pattern}"')
         return self
 
-    def exists_(self, col,query):
+    def exists_(self, query):
         if not isinstance(query, str):
             raise ValueError("EXISTS query must be a string.")
         self._where_conditions.append(f'EXISTS ({query})')

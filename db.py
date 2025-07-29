@@ -172,6 +172,14 @@ class SQLQueryBuilder:
         self._where_conditions.append(f'"{col}" LIKE "{pattern}"')
         return self
 
+    def exists_(self, col,query):
+        if not isinstance(query, str):
+            raise ValueError("EXISTS query must be a string.")
+        self._where_conditions.append(f'EXISTS ({query})')
+        return self
+
+
+
 
     def group_by(self, *fields):
         self._group_by = f"GROUP BY {', '.join(fields)}"
@@ -185,6 +193,7 @@ class SQLQueryBuilder:
     def limit(self, n):
         self._limit = f"LIMIT {n}"
         return self
+
 
     def build(self):
         # query = f"SELECT {self._select} FROM {self.table} "

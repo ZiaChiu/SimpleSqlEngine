@@ -74,7 +74,13 @@ class SQLiteDataEngine:
 
 
 class SQLQueryBuilder:
-    def __init__(self, db_table):
+    def __init__(self, db_table, db_type="sqlite"):
+        self.__type = db_type
+
+        if db_type not in ["sqlite", "mysql", "postgresql"]:
+
+            raise ValueError(f"Unsupported database type: {db_type}. Supported types are 'sqlite', 'mysql', 'postgresql'.")
+
         self.table = db_table
         self._select = "*"
         self._where_conditions = []

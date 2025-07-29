@@ -111,8 +111,21 @@ class SQLQueryBuilder:
         return self
 
 
-    def select(self, *columns):
-        self._query = f"SELECT {self._select} FROM {self.table} "
+    def select(self, *columns,top=False,top_count=None):
+        # if top:
+        #     self._query = f"SELECT TOP {top_count} {self._select} FROM {self.table} "
+        # else:
+        #     self._query = f"SELECT {self._select} FROM {self.table} "
+        match top:
+            case True:
+                if top_count is None:
+                    raise ValueError("top_count must be specified when top is True.")
+                self._query = f"SELECT TOP {top_count} {self._select} FROM {self.table} "
+            case False:
+                if top_count is not None:
+                    raise ValueError("top_count should not be specified when top is False.")
+                self._query = f"SELECT {self._select} FROM {self.table} "
+
         parts = []
         for col in columns:
             if isinstance(col, tuple):

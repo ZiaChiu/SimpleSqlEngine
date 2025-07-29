@@ -6,7 +6,7 @@ This is a simple tool which helps me process csv file by sql statements.
 
 I created it just for my own convenience.
 
-—-
+
 ## Features 
 
 - suports traditional SQL statements.
@@ -17,7 +17,8 @@ I created it just for my own convenience.
 
 - support MySQL, SQLite, PostgreSQL, MS SQL Server.
 
---
+- support sql <-> csv transformation
+
 ## usage
 
 

@@ -8,6 +8,16 @@ It is not a full-fledged SQL engine, but rather a simple wrapper to help me with
 
 I created it just for my convenience. In the future, I may add more features.
 
+## Environment Requirements
+- ### Python 3.12 or higher
+- ### Dependency packages
+- matplotlib
+- pandas
+- sqlite3
+- scikit-learn
+- pytest
+- numpy
+- seaborn
 
 
 ## Features 

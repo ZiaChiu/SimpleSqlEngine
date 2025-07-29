@@ -6,6 +6,9 @@ import sqlite3
 import pandas as pd
 from sklearn.conftest import pyplot
 
+# Description: A simple SQL data engine for SQLite with automatic schema inference from DataFrames and CSV files.
+
+
 def infer_sql_type(value):
     if pd.isnull(value):
         return "TEXT"

@@ -21,7 +21,7 @@ def infer_sql_type(value):
     return "TEXT"
 
 
-class SimpleSQLDataEngine:
+class SQLiteDataEngine:
     def __init__(self, db_path="my_database.db"):
         self.db_path = db_path
         self.conn = sqlite3.connect(db_path)
@@ -165,7 +165,7 @@ class SQLQueryBuilder:
             raise ValueError("LIKE pattern must be a string.")
         self._where_conditions.append(f'"{col}" LIKE "{pattern}"')
         return self
-    
+
 
     def group_by(self, *fields):
         self._group_by = f"GROUP BY {', '.join(fields)}"

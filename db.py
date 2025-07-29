@@ -160,11 +160,12 @@ class SQLQueryBuilder:
     def not_between_(self, col, start, end):
         self._where_conditions.append(f'"{col}" NOT BETWEEN {start} AND {end}')
         return self
-    def like(self, col, pattern):
+    def like_(self, col, pattern):
         if not isinstance(pattern, str):
             raise ValueError("LIKE pattern must be a string.")
         self._where_conditions.append(f'"{col}" LIKE "{pattern}"')
         return self
+    
 
     def group_by(self, *fields):
         self._group_by = f"GROUP BY {', '.join(fields)}"

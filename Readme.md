@@ -31,7 +31,7 @@ I created it just for my convenience. In the future, I may add more features.
     AVG() - returns the average value of a numerical column
 Please just use them  as string of sql arguments in the query.
 
-## usage
+## Usage
 
 - ### SQLiteDataEngine
 

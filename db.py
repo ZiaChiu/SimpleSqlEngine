@@ -111,6 +111,23 @@ class SQLQueryBuilder:
         return self
 
 
+    def delete(self, *columns):
+
+        parts = []
+        for col in columns:
+            if isinstance(col, tuple):
+                expr, alias = col
+                parts.append(f"{expr} AS {alias}")
+            else:
+                parts.append(col)
+        self._select = ", ".join(parts)
+        self._query = f"DELETE FROM {self.table} "
+
+        return self
+
+
+
+
     def select(self, *columns,top=False,top_count=None):
         # if top:
         #     self._query = f"SELECT TOP {top_count} {self._select} FROM {self.table} "

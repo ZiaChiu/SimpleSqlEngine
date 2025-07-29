@@ -22,7 +22,41 @@ I created it just for my convenience. In the future, I may add more features.
 
 - Support SQL <- db -> CSV transformation
 
+## Unsupported SQL features
+ 
+    MIN() - returns the smallest value within the selected column
+    MAX() - returns the largest value within the selected column
+    COUNT() - returns the number of rows in a set
+    SUM() - returns the total sum of a numerical column
+    AVG() - returns the average value of a numerical column
+Please just use them  as string of sql arguments in the query.
+
 ## usage
+
+- ### SQLiteDataEngine
+
+SQLiteDataEngine is a simple SQLite database engine that allows you to execute SQL queries on a SQLite database file which comes from transforming CSV files into SQLite databases.
+
+arguments:
+- `db_path`: The name of the db file you will create at current location.
+
+functions:
+
+- import_csv(): This method will import a CSV file into the SQLite database.
+  - arguments:
+    - `csv_path`: The path to the CSV file you want to import.
+    - `table_name`: The name of the table to create in the database. If not provided, it will use the CSV file name without extension.
+```python
+from db import *
+
+engine = SQLiteDataEngine("my_database.db")
+
+# Load from CSV and create table automatically
+table = engine.import_csv("NetflixTVShowsAndMovies.csv")
+engine.close()
+
+
+```
 
 - ### SQLQueryBuilder
 SQLQueryBuilder is a query statement generator. 
@@ -30,6 +64,26 @@ You can use it to build SQL queries in a more structured way.
 
 arguments:
 - `db_path`: The name of the db file to query.
+- `query`: the query statements which will do in db.
+
+```python
+from db import *
+
+SQLQueryBuilder("NetflixTVShowsAndMovies")
+    .select("type", ('AVG("imdb_score")', "avg_score"))
+    .where("type", False)  # Genre IS NOT NULL
+    .and_("imdb_score", (">=", 7))
+    .group_by("type")
+    .order_by("avg_score", desc=True)
+    .limit(5)
+    .build()
+```
+This will generate the following SQL query:
+```sql
+SELECT * FROM NetflixTVShowsAndMovies WHERE "type" IS NOT NULL AND "imdb_score" IS NULL GROUP BY type ORDER BY avg_score DESC LIMIT 5;
+```
+
+- build(): This method will return the SQL query string.
 
 example:
 ```python

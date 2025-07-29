@@ -121,7 +121,7 @@ class SQLQueryBuilder:
     def _parse_condition(col, value):
         if not value:
             return f'"{col}" IS NOT NULL'
-        elif value is True:
+        elif value:
             return f'"{col}" IS NULL'
         elif isinstance(value, (int, float)):
             return f'"{col}" = {value}'
@@ -153,6 +153,17 @@ class SQLQueryBuilder:
         return self
     def not_in_(self, col, values):
         self._where_conditions.append("NOT IN" + self._parse_condition(col, values))
+        return self
+    def between_(self, col, start, end):
+        self._where_conditions.append(f'"{col}" BETWEEN {start} AND {end}')
+        return self
+    def not_between_(self, col, start, end):
+        self._where_conditions.append(f'"{col}" NOT BETWEEN {start} AND {end}')
+        return self
+    def like(self, col, pattern):
+        if not isinstance(pattern, str):
+            raise ValueError("LIKE pattern must be a string.")
+        self._where_conditions.append(f'"{col}" LIKE "{pattern}"')
         return self
 
     def group_by(self, *fields):

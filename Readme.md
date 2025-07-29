@@ -39,16 +39,16 @@ I created it just for my convenience. In the future, I may add more features.
     COUNT() - returns the number of rows in a set
     SUM() - returns the total sum of a numerical column
     AVG() - returns the average value of a numerical column
-Please just use them  as string of sql arguments in the query.
+Please just use them as a string of SQL arguments in the query.
 
 ## Usage
 
 - ### SQLiteDataEngine
 
-SQLiteDataEngine is a simple SQLite database engine that allows you to execute SQL queries on a SQLite database file which comes from transforming CSV files into SQLite databases.
+SQLiteDataEngine is a simple SQLite database engine that allows you to execute SQL queries on a SQLite database file, which was transformed from CSV files into SQLite databases.
 
 arguments:
-- `db_path`: The name of the db file you will create at current location.
+- `db_path`: The name of the db file you will create at the current location.
 
 functions:
 
@@ -61,7 +61,7 @@ from db import *
 
 engine = SQLiteDataEngine("my_database.db")
 
-# Load from CSV and create table automatically
+# Load from CSV and create a table automatically
 table = engine.import_csv("NetflixTVShowsAndMovies.csv")
 engine.close()
 
@@ -74,7 +74,7 @@ You can use it to build SQL queries in a more structured way.
 
 arguments:
 - `db_path`: The name of the db file to query.
-- `query`: the query statements which will do in db.
+- `query`: the query statements which will be executed in the DB.
 
 ```python
 from db import *

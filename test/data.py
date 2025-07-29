@@ -6,7 +6,7 @@ from numpy.version import release
 from db import *
 
 
-engine = SimpleSQLDataEngine("my_database.db")
+engine = SQLiteDataEngine("my_database.db")
 
 # Load from CSV and create table automatically
 table = engine.import_csv("NetflixTVShowsAndMovies.csv")

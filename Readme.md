@@ -2,22 +2,22 @@
 # Simple SQL Engine
 
 
-This is a simple tool which helps me process csv file by sql statements.
+This simple tool helps me process a CSV file using SQL statements.
 
-I created it just for my own convenience.
+I created it just for my convenience.
 
 
 ## Features 
 
-- suports traditional SQL statements.
+- Support traditional SQL statements.
 
-- support Cross-file join
+- Support Cross-file join
 
-- support img output
+- Support img output
 
-- support MySQL, SQLite, PostgreSQL, MS SQL Server.
+- Support MySQL, SQLite, PostgreSQL, and MS SQL Server.
 
-- support sql <-> csv transformation
+- Support SQL <- db -> CSV transformation
 
 ## usage
 

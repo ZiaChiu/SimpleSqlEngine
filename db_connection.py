@@ -4,37 +4,35 @@ import sqlite3
 
 import pandas as pd
 
-
 def check_reserved_word(wd):
-    # Check if the word is a reserved SQL word and quote it if necessary.
     print("wd is:", wd)
 
-    # reserved words list, you can add more reserved words as needed
-    # example: reserved_words_mysql = ["SELECT", "FROM", "WHERE", "INSERT", "UPDATE", "DELETE", ...]
-    # words = [reserved_words_sqlite,reserved_words_mysql]
     words = [reserved_words_sqlite]
 
-    for w in words:
-        if type(wd) is list:
-            for d in wd:
-                pattern = r'\b(MIN|MAX|COUNT|SUM|AVG)\(\s*"?(\w+)"?\s*\)'
-                match = re.match(pattern, d)
-                if match and match.group(2).upper() in w:
-                    wd[wd.index(d)] = f'{match.group(1)}("{match.group(2)}")'
-                    print(f"Warning: {match.group(2)} is a reserved word in SQL, so it has been quoted.")
-                else:
-                    print(f"No reserved word found in {d}, no quoting needed.")
-
-            return tuple(wd)
-
+    def quote_if_reserved(d):
+        pattern = r'\b(MIN|MAX|COUNT|SUM|AVG)\(\s*"?(\w+)"?\s*\)'
+        match = re.match(pattern, d)
+        if match:
+            func, col = match.group(1), match.group(2)
+            for w in words:
+                if col.upper() in w:
+                    print(f"Warning: {col} is a reserved word in SQL, so it has been quoted.")
+                    return f'{func}("{col}")'
+            print(f"No reserved word found in {col}, no quoting needed.")
+            return f"{func}({col})"
         else:
-            if wd.upper() in w:
-                wd = f'"{wd}"'
-                print(f"Warning: {wd} is a reserved word in SQL, so it has been quoted.")
-                return wd
-            else:
-                print("No reserved word found, no quoting needed.")
-    return wd
+            for w in words:
+                if d.upper() in w:
+                    print(f"Warning: {d} is a reserved word in SQL, so it has been quoted.")
+                    return f'"{d}"'
+            print(f"No reserved word found in {d}, no quoting needed.")
+            return d
+
+    # Handle list or single string
+    if isinstance(wd, list):
+        return tuple(quote_if_reserved(d) for d in wd)
+    else:
+        return quote_if_reserved(wd)
 
 
 # SQLite

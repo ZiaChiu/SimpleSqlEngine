@@ -79,25 +79,25 @@ class TestSQLite:
     def test_query_exists(self):
         query = SQLQueryBuilder("NetflixTVShowsAndMovies") \
             .select("index") \
-            .exists_(SQLQueryBuilder("NetflixTVShowsAndMovies").select("index").build())
+            .exists_(SQLQueryBuilder("NetflixTVShowsAndMovies").select("index").build(exists=True))
 
         assert query.build() == 'SELECT "index" FROM NetflixTVShowsAndMovies WHERE EXISTS (SELECT "index" FROM NetflixTVShowsAndMovies);'
     def test_query_exists_with_reserved_word(self):
         query = SQLQueryBuilder("NetflixTVShowsAndMovies") \
             .select("index") \
-            .exists_(SQLQueryBuilder("NetflixTVShowsAndMovies").select("index").build())
+            .exists_(SQLQueryBuilder("NetflixTVShowsAndMovies").select("index").build(exists=True))
 
         assert query.build() == 'SELECT "index" FROM NetflixTVShowsAndMovies WHERE EXISTS (SELECT "index" FROM NetflixTVShowsAndMovies);'
     def test_query_exists_with_reserved_word_in_function(self):
         query = SQLQueryBuilder("NetflixTVShowsAndMovies") \
             .select(("AVG(index)", "avg_index")) \
-            .exists_(SQLQueryBuilder("NetflixTVShowsAndMovies").select("index").build())
+            .exists_(SQLQueryBuilder("NetflixTVShowsAndMovies").select("index").build(exists=True))
 
         assert query.build() == 'SELECT AVG("index") AS avg_index FROM NetflixTVShowsAndMovies WHERE EXISTS (SELECT "index" FROM NetflixTVShowsAndMovies);'
     def test_query_exists_with_reserved_word_in_function_and_alias(self):
         query = SQLQueryBuilder("NetflixTVShowsAndMovies") \
             .select(("AVG(index)", "avg_index"), ("MIN(index)", "min_index")) \
-            .exists_(SQLQueryBuilder("NetflixTVShowsAndMovies").select("index").build())
+            .exists_(SQLQueryBuilder("NetflixTVShowsAndMovies").select("index").build(exists=True))
 
         assert query.build() == 'SELECT AVG("index") AS avg_index, MIN("index") AS min_index FROM NetflixTVShowsAndMovies WHERE EXISTS (SELECT "index" FROM NetflixTVShowsAndMovies);'
     def test_query_exists_with_reserved_word_in_function_and_alias_and_where(self):
@@ -108,7 +108,7 @@ class TestSQLite:
                  .group_by("type")
                  .order_by("avg_index", desc=True)
                  .limit(5)
-                 .exists_(SQLQueryBuilder("NetflixTVShowsAndMovies").select("index").build()))
+                 .exists_(SQLQueryBuilder("NetflixTVShowsAndMovies").select("index").build(exists=True), with_where=False))
 
         assert query.build() == 'SELECT AVG("index") AS avg_index FROM NetflixTVShowsAndMovies WHERE type IS NOT NULL AND "index" >= 7 GROUP BY type ORDER BY avg_index DESC LIMIT 5 AND EXISTS (SELECT "index" FROM NetflixTVShowsAndMovies);'
 

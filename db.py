@@ -10,6 +10,7 @@ from db_connection import check_reserved_word
 
 class SQLQueryBuilder:
     def __init__(self, db_table, db_type="sqlite"):
+        self._exists = ""
         self.__type = db_type
         if db_type not in ["sqlite", "mysql", "postgresql"]:
             raise ValueError(f"Unsupported database type: {db_type}. Supported types are 'sqlite', 'mysql', 'postgresql'.")
@@ -152,10 +153,14 @@ class SQLQueryBuilder:
         self._where_conditions.append(f'"{col}" LIKE "{pattern}"')
         return self
 
-    def exists_(self, query):
+    def exists_(self, query, with_where=True):
         if not isinstance(query, str):
             raise ValueError("EXISTS query must be a string.")
-        self._where_conditions.append(f'EXISTS ({query})')
+        if with_where:
+            self._where_conditions.append(f'EXISTS ({query})')
+        else:
+            self._exists = f' AND EXISTS ({query})'
+
         return self
 
     def group_by(self, *fields):
@@ -177,7 +182,7 @@ class SQLQueryBuilder:
         return self
 
 
-    def build(self):
+    def build(self,exists=False):
         # query = f"SELECT {self._select} FROM {self.table} "
         query = self._query
         if self._where_conditions:
@@ -188,7 +193,13 @@ class SQLQueryBuilder:
             query += self._order_by + " "
         if self._limit:
             query += self._limit
-        return query.strip() + ";"
+        if self._exists:
+            query += self._exists
+        if exists:
+            r = query.strip()
+        else:
+            r = query.strip() + ";"
+        return r
 
 
 

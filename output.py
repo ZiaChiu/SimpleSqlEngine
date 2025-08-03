@@ -1,7 +1,7 @@
+import sqlite3
+
 from db import *
-import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.conftest import pyplot
 
 class DataOutput:
     def __init__(self, db_file, query=None, output_name=""):

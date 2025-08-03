@@ -3,7 +3,6 @@ import pytest
 
 from numpy.version import release
 
-from db import *
 from db_connection import *
 from output import *
 

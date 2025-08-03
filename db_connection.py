@@ -4,9 +4,14 @@ import sqlite3
 
 import pandas as pd
 
+
 def check_reserved_word(wd):
+    # Check if the word is a reserved SQL word and quote it if necessary.
     print("wd is:", wd)
 
+    # reserved words list, you can add more reserved words as needed
+    # example: reserved_words_mysql = ["SELECT", "FROM", "WHERE", "INSERT", "UPDATE", "DELETE", ...]
+    # words = [reserved_words_sqlite,reserved_words_mysql]
     words = [reserved_words_sqlite]
 
     for w in words:
@@ -63,7 +68,7 @@ reserved_words_sqlite = [
     "WITH", "WITHOUT"
 ]
 
-
+# data type of sqlite
 def infer_sql_type(value):
     if pd.isnull(value):
         return "TEXT"
@@ -77,6 +82,8 @@ def infer_sql_type(value):
 
 
 class SQLiteDataEngine:
+
+    # create a local db file and connect to it
     def __init__(self, db_path="my_database.db"):
         self.db_path = db_path
         self.conn = sqlite3.connect(db_path)
@@ -84,6 +91,7 @@ class SQLiteDataEngine:
         self.schemas = {}
         print(f"Connected to SQLite DB at: {db_path}")
 
+    # Create a table from a DataFrame by inferring the schema
     def create_table_from_df(self, table_name, df: pd.DataFrame):
         # Infer types from first non-null row
         sample_row = df.dropna().iloc[0] if not df.dropna().empty else df.iloc[0]
@@ -93,6 +101,7 @@ class SQLiteDataEngine:
         }
         self.create_table(table_name, schema)
 
+    # Import a CSV file into a table, creating the table if it doesn't exist
     def import_csv(self, file_path, table_name=None):
         df = pd.read_csv(file_path)
         if table_name is None:
@@ -105,6 +114,7 @@ class SQLiteDataEngine:
         print(f"Imported {len(df)} rows into '{table_name}'")
         return table_name
 
+    # Create a table with a specified schema
     def create_table(self, table_name, columns: dict):
         self.schemas[table_name] = columns
         col_defs = ", ".join([f'"{col}" {typ}' for col, typ in columns.items()])
@@ -113,16 +123,20 @@ class SQLiteDataEngine:
         self.conn.commit()
         print(f"Created table '{table_name}' with schema: {columns}")
 
+    # output schema of a table
     def get_schema(self, table_name):
         if table_name in self.schemas:
             return self.schemas[table_name]
         self.cursor.execute(f"PRAGMA table_info('{table_name}')")
         return {row[1]: row[2] for row in self.cursor.fetchall()}
 
+    # List all tables in the database
     def list_tables(self):
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
         return [row[0] for row in self.cursor.fetchall()]
-
+    # Close the database connection
     def close(self):
         self.conn.close()
         print("Database connection closed.")
+
+# TODO: MySQL and PostgreSQL support

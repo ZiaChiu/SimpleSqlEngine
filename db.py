@@ -9,11 +9,8 @@ import pandas as pd
 class SQLQueryBuilder:
     def __init__(self, db_table, db_type="sqlite"):
         self.__type = db_type
-
         if db_type not in ["sqlite", "mysql", "postgresql"]:
-
             raise ValueError(f"Unsupported database type: {db_type}. Supported types are 'sqlite', 'mysql', 'postgresql'.")
-
         self.table = db_table
         self._select = "*"
         self._where_conditions = []
@@ -42,8 +39,6 @@ class SQLQueryBuilder:
         print(self._select)
         self._query = f"UPDATE {self.table} SET {self._select} "
         return self
-
-
     def delete(self, *columns):
 
         parts = []
@@ -57,12 +52,15 @@ class SQLQueryBuilder:
         self._query = f"DELETE FROM {self.table} "
 
         return self
-
-
-
-
-
     def select(self, *columns,top=False,top_count=None):
+        parts = []
+        for col in columns:
+            if isinstance(col, tuple):
+                expr, alias = col
+                parts.append(f"{expr} AS {alias}")
+            else:
+                parts.append(col)
+        self._select = ", ".join(parts)
 
         match top:
             case True:
@@ -74,14 +72,7 @@ class SQLQueryBuilder:
                     raise ValueError("top_count should not be specified when top is False.")
                 self._query = f"SELECT {self._select} FROM {self.table} "
 
-        parts = []
-        for col in columns:
-            if isinstance(col, tuple):
-                expr, alias = col
-                parts.append(f"{expr} AS {alias}")
-            else:
-                parts.append(col)
-        self._select = ", ".join(parts)
+
         return self
 
     @staticmethod

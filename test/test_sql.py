@@ -7,12 +7,27 @@ from db import *
 from db_connection import *
 from output import *
 
+#
+# args = ['-v','-s','./']
+#
+# pytest.main(args)
+
 
 engine = SQLiteDataEngine("my_database.db")
 
 # Load from CSV and create table automatically
 table = engine.import_csv("NetflixTVShowsAndMovies.csv")
 engine.close()
+
+class TestSQLite:
+    def test_query_select(self):
+        query = SQLQueryBuilder("NetflixTVShowsAndMovies") \
+            .select("index")
+        assert query.build() == 'SELECT "index" FROM "NetflixTVShowsAndMovies"'
+    def test_query_select_with_alias(self):
+        query = SQLQueryBuilder("NetflixTVShowsAndMovies") \
+            .select("index", ("imdb_score", "score"))
+        assert query.build() == 'SELECT "index", "imdb_score" AS "score" FROM "NetflixTVShowsAndMovies"'
 
 
 # query = (
@@ -30,9 +45,9 @@ engine.close()
 # print(c)
 #
 # d.line_plot(kind="scatter")
-
-def test_demo():
-    assert 100 == 100
+#
+# def test_demo():
+#     assert 100 == 100
 
 # class TestDome:
 #
@@ -41,31 +56,31 @@ def test_demo():
 #
 #     def test_demo(self):
 #         assert 22 == 21
-class TestDome:
+# class TestDome:
+#
+#     def test_demo1(self):
+#         print('\n----测试用例执行-----------')
+#         assert 11 == 11
 
-    def test_demo1(self):
-        print('\n----测试用例执行-----------')
-        assert 11 == 11
-
-query = (
-SQLQueryBuilder("NetflixTVShowsAndMovies")
-.select("release_year","imdb_score")
-.where("age_certification", "R")
-.build()
-
-)
-
-query1 = (
-SQLQueryBuilder("NetflixTVShowsAndMovies")
-.update(release_year=2026, imdb_score=8.5)
-.where("index", 3)
-.build()
-)
+# query = (
+# SQLQueryBuilder("NetflixTVShowsAndMovies")
+# .select("release_year","imdb_score")
+# .where("age_certification", "R")
+# .build()
+#
+# )
+#
+# query1 = (
+# SQLQueryBuilder("NetflixTVShowsAndMovies")
+# .update(release_year=2026, imdb_score=8.5)
+# .where("index", 3)
+# .build()
+# )
 
 
 # UPDATE NetflixTVShowsAndMovies SET "release_year" = 2026,
 # "imdb_score" = 8.5 WHERE "index" IS NULL;
-print(query1)
+# print(query1)
 
 
 # d = DataOutput("./my_database.db", query1,"results4")

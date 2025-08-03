@@ -1,5 +1,7 @@
 import sqlite3
 
+import pandas as pd
+
 from db import *
 import matplotlib.pyplot as plt
 
@@ -57,6 +59,7 @@ class DataOutput:
         df = pd.read_csv(self.__csv)
         return df
 
+    # TODO: Add support for different plot kinds
     def line_plot(self, kind="line", title=None):
         df = self.get_csv()
 

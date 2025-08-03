@@ -40,6 +40,14 @@ I created it just for my convenience. In the future, I may add more features.
     SUM() - returns the total sum of a numerical column
     AVG() - returns the average value of a numerical column
 Please just use them as a string of SQL arguments in the query.
+example:
+
+```python
+SQLQueryBuilder("NetflixTVShowsAndMovies")
+    .select("type", ('AVG("imdb_score")', "avg_score"))
+    .where("type", False)  # Genre IS NOT NULL
+# output: select type, AVG(imdb_score) as avg_score from NetflixTVShowsAndMovies where type IS NOT NULL
+```
 
 ## Usage
 

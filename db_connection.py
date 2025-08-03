@@ -1,16 +1,35 @@
 import os
+import re
 import sqlite3
 
 import pandas as pd
 
-def check_reserved_word(word):
+def check_reserved_word(wd):
+    print("wd is:", wd)
 
     words = [reserved_words_sqlite]
 
     for w in words:
-        if word.lower() in w:
-            return f'"{words}"'
-    return None
+        if type(wd) is list:
+            for d in wd:
+                pattern = r'\b(MIN|MAX|COUNT|SUM|AVG)\(\s*"?(\w+)"?\s*\)'
+                match = re.match(pattern, d)
+                if match and match.group(2).upper() in w:
+                    wd[wd.index(d)] = f'{match.group(1)}("{match.group(2)}")'
+                    print(f"Warning: {match.group(2)} is a reserved word in SQL, so it has been quoted.")
+                else:
+                    print(f"No reserved word found in {d}, no quoting needed.")
+
+            return tuple(wd)
+
+        else:
+            if wd.upper() in w:
+                wd = f'"{wd}"'
+                print(f"Warning: {wd} is a reserved word in SQL, so it has been quoted.")
+                return wd
+            else:
+                print("No reserved word found, no quoting needed.")
+    return wd
 
 
 # SQLite
@@ -43,6 +62,7 @@ reserved_words_sqlite = [
     "VALUES", "VIEW", "VIRTUAL", "WHEN", "WHERE",
     "WITH", "WITHOUT"
 ]
+
 
 def infer_sql_type(value):
     if pd.isnull(value):

@@ -1,6 +1,8 @@
 import os
 import sqlite3
 import pandas as pd
+import db_connection
+from db_connection import check_reserved_word
 
 
 # Description: A simple SQL data engine for SQLite with automatic schema inference from DataFrames and CSV files.
@@ -57,8 +59,11 @@ class SQLQueryBuilder:
         for col in columns:
             if isinstance(col, tuple):
                 expr, alias = col
+                expr = check_reserved_word(expr)
+                alias = check_reserved_word(alias)
                 parts.append(f"{expr} AS {alias}")
             else:
+                col = check_reserved_word(col)
                 parts.append(col)
         self._select = ", ".join(parts)
 
@@ -77,13 +82,14 @@ class SQLQueryBuilder:
 
     @staticmethod
     def _parse_condition(col, value):
+        col = check_reserved_word(col)
         # 1) NULL‐check
         if value is None:
-            return f'"{col}" IS NULL'
+            return f'{col} IS NULL'
           # 1b) interpret False as “IS NOT NULL”
         if value is False:
 
-            return f'"{col}" IS NOT NULL'
+            return f'{col} IS NOT NULL'
 
         # 2) tuple for operators, including NULL/not‐NULL if you want
         if isinstance(value, tuple) and len(value) == 2:
@@ -91,24 +97,24 @@ class SQLQueryBuilder:
             # e.g. ("!=", None) → IS NOT NULL
             if val is None:
                 if op in ("!=", "<>"):
-                    return f'"{col}" IS NOT NULL'
+                    return f'{col} IS NOT NULL'
                 elif op == "=":
-                    return f'"{col}" IS NULL'
+                    return f'{col} IS NULL'
                 else:
                     raise ValueError(f"Unsupported NULL operator: {op}")
             # non‐NULL tuple
             if isinstance(val, str):
-                return f'"{col}" {op} "{val}"'
+                return f'{col}  {op} "{val}"'
             else:
-                return f'"{col}" {op} {val}'
+                return f'{col} {op} {val}'
 
         # 3) simple scalar equality
         if isinstance(value, (int, float, bool)):
             # bools map to SQL TRUE/FALSE if you like, or as 1/0
-            return f'"{col}" = {value!r}'  # repr(True)->'True', repr(3)->'3'
+            return f'{col} = {value!r}'  # repr(True)->'True', repr(3)->'3'
 
         if isinstance(value, str):
-            return f'"{col}" = "{value}"'
+            return f'{col} = "{value}"'
 
         raise ValueError(f"Unsupported condition type: {value!r}")
 
@@ -131,12 +137,16 @@ class SQLQueryBuilder:
         self._where_conditions.append("NOT IN" + self._parse_condition(col, values))
         return self
     def between_(self, col, start, end):
+        col = check_reserved_word(col)
+        start = check_reserved_word(start)
+        end = check_reserved_word(end)
         self._where_conditions.append(f'"{col}" BETWEEN {start} AND {end}')
         return self
     def not_between_(self, col, start, end):
         self._where_conditions.append(f'"{col}" NOT BETWEEN {start} AND {end}')
         return self
     def like_(self, col, pattern):
+        col = check_reserved_word(col)
         if not isinstance(pattern, str):
             raise ValueError("LIKE pattern must be a string.")
         self._where_conditions.append(f'"{col}" LIKE "{pattern}"')
@@ -148,15 +158,17 @@ class SQLQueryBuilder:
         self._where_conditions.append(f'EXISTS ({query})')
         return self
 
-
-
-
     def group_by(self, *fields):
+
         self._group_by = f"GROUP BY {', '.join(fields)}"
         return self
 
     def order_by(self, *fields, desc=False):
         order = "DESC" if desc else "ASC"
+        if not fields:
+            raise ValueError("At least one field must be specified for ORDER BY.")
+        fields = [check_reserved_word(field) for field in fields]
+
         self._order_by = f"ORDER BY {', '.join(fields)} {order}"
         return self
 

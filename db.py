@@ -80,6 +80,10 @@ class SQLQueryBuilder:
         # 1) NULL‐check
         if value is None:
             return f'"{col}" IS NULL'
+          # 1b) interpret False as “IS NOT NULL”
+        if value is False:
+
+            return f'"{col}" IS NOT NULL'
 
         # 2) tuple for operators, including NULL/not‐NULL if you want
         if isinstance(value, tuple) and len(value) == 2:

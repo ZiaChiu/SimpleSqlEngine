@@ -36,13 +36,8 @@
 
 Refer the example code of [setup.py](setup.py) to know how to apply this package in your project.
 
-```bash
-pip install .
-# or
-python setup.py install
-```
 
-Ensure you have Python 3.8+ and SQLite installed.
+Ensure you have Python 3.12+ and SQLite installed.
 
 ## Quick Start
 

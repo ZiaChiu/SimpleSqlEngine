@@ -86,22 +86,36 @@ class SQLQueryBuilder:
 
     @staticmethod
     def _parse_condition(col, value):
-        if not value:
-            return f'"{col}" IS NOT NULL'
-        elif value:
+        # 1) NULL‐check
+        if value is None:
             return f'"{col}" IS NULL'
-        elif isinstance(value, (int, float)):
-            return f'"{col}" = {value}'
-        elif isinstance(value, str):
-            return f'"{col}" = "{value}"'
-        elif isinstance(value, tuple) and len(value) == 2:
+
+        # 2) tuple for operators, including NULL/not‐NULL if you want
+        if isinstance(value, tuple) and len(value) == 2:
             op, val = value
+            # e.g. ("!=", None) → IS NOT NULL
+            if val is None:
+                if op in ("!=", "<>"):
+                    return f'"{col}" IS NOT NULL'
+                elif op == "=":
+                    return f'"{col}" IS NULL'
+                else:
+                    raise ValueError(f"Unsupported NULL operator: {op}")
+            # non‐NULL tuple
             if isinstance(val, str):
                 return f'"{col}" {op} "{val}"'
             else:
                 return f'"{col}" {op} {val}'
-        else:
-            raise ValueError(f"Unsupported condition: {value}")
+
+        # 3) simple scalar equality
+        if isinstance(value, (int, float, bool)):
+            # bools map to SQL TRUE/FALSE if you like, or as 1/0
+            return f'"{col}" = {value!r}'  # repr(True)->'True', repr(3)->'3'
+
+        if isinstance(value, str):
+            return f'"{col}" = "{value}"'
+
+        raise ValueError(f"Unsupported condition type: {value!r}")
 
     def where(self, col, value):
         self._where_conditions = [self._parse_condition(col, value)]

@@ -1,7 +1,3 @@
-import os
-import sqlite3
-import pandas as pd
-import db_connection
 from db_connection import check_reserved_word
 
 
@@ -21,6 +17,7 @@ class SQLQueryBuilder:
         self._order_by = ""
         self._limit = ""
         self._query = ""
+        self._having_conditions = []
 
     def update(self, **kwargs):
         parts = []
@@ -168,6 +165,22 @@ class SQLQueryBuilder:
         self._group_by = f"GROUP BY {', '.join(fields)}"
         return self
 
+    def having(self, col, value):
+        self._having_conditions = [self._parse_condition(col, value)]
+        return self
+
+    def and_having(self, col, value):
+        self._having_conditions.append("AND " + self._parse_condition(col, value))
+        return self
+
+    def having_exists(self, subquery: str):
+
+        self._having_conditions.append(f"EXISTS ({subquery})")
+        return self
+    def and_exist_having(self, subquery: str):
+        self._having_conditions.append(f"AND EXISTS ({subquery})")
+        return self
+
     def order_by(self, *fields, desc=False):
         order = "DESC" if desc else "ASC"
         if not fields:
@@ -189,6 +202,8 @@ class SQLQueryBuilder:
             query += "WHERE " + " ".join(self._where_conditions) + " "
         if self._group_by:
             query += self._group_by + " "
+        if self._having_conditions:
+            query += "HAVING " + " ".join(self._having_conditions) + " "
         if self._order_by:
             query += self._order_by + " "
         if self._limit:

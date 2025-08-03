@@ -14,40 +14,19 @@ I created it just for my convenience. In the future, I may add more features.
 - matplotlib
 - pandas
 - sqlite3
-- scikit-learn
 - pytest
 - numpy
 
+## Build the dependency to your project
 
-## Features 
+1. copy the different package content from requirement.txt to your project directory's requirement.txt .
 
-- Support traditional SQL statements.
+2. run the command below under your venv to install the package and its dependencies in your project directory.
 
-- Support Cross-file join
-
-- Support img output
-
-- Support MySQL, SQLite, PostgreSQL, and MS SQL Server.
-
-- Support SQL <- db -> CSV transformation
-
-## Unsupported SQL features
- 
-    MIN() - returns the smallest value within the selected column
-    MAX() - returns the largest value within the selected column
-    COUNT() - returns the number of rows in a set
-    SUM() - returns the total sum of a numerical column
-    AVG() - returns the average value of a numerical column
-Please just use them as a string of SQL arguments in the query.
-example:
-
-```python
-SQLQueryBuilder("NetflixTVShowsAndMovies")
-    .select("type", ('AVG("imdb_score")', "avg_score"))
-    .where("type", False)  # Genre IS NOT NULL
-# output: select type, AVG(imdb_score) as avg_score from NetflixTVShowsAndMovies where type IS NOT NULL
+```bash
+pip install . -r requirements.txt
 ```
-
+### 
 ## Usage
 
 - ### SQLiteDataEngine
@@ -71,7 +50,6 @@ engine = SQLiteDataEngine("my_database.db")
 # Load from CSV and create a table automatically
 table = engine.import_csv("NetflixTVShowsAndMovies.csv")
 engine.close()
-
 
 ```
 
@@ -116,6 +94,41 @@ SQLQueryBuilder("NetflixTVShowsAndMovies")
 d = DataOutput("./my_database.db", query,"results4")
 c = d.get_csv()
 print(c)
+```
+- ### DataOutput
+- DataOutput is a class that allows you to export the results of a SQL query to a CSV file.
+- arguments:
+- `db_file`: The name of the SQLite database file.
+- `query`: The SQL query to execute.
+- `output_name`: The name of the output CSV file (without extension).
+- functions:
+- `get_csv()`: This method will execute the SQL query and return the results as a CSV file.
+  - file will be saved in the current directory with the name specified in `output_name`.
+
+```python
+from db import *
+from output import DataOutput
+# Initialize database and import CSV
+engine = SQLiteDataEngine("my_database.db")
+engine.import_csv("NetflixTVShowsAndMovies.csv")
+engine.close()
+# Build a query to compute average index per type
+sql = (
+    SQLQueryBuilder("NetflixTVShowsAndMovies")
+      .select(("AVG(index)", "avg_index"))
+      .where("type", False)
+      .and_("index", (">=", 7))
+      .group_by("type")
+      .order_by("avg_index", desc=True)
+      .limit(5)
+      .build()
+)
+# Export results to CSV
+DataOutput(
+    db_file="my_database.db",
+    query=sql,
+    output_name="output_avg_index"
+)
 ```
 
 

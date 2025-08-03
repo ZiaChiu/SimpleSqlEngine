@@ -1,5 +1,5 @@
 
-# Simple SQL Engine
+# Simple SQL Engine(SSE)
 
 
 This simple tool helps me process a CSV file using SQL statements.
@@ -17,7 +17,6 @@ I created it just for my convenience. In the future, I may add more features.
 - scikit-learn
 - pytest
 - numpy
-- seaborn
 
 
 ## Features 

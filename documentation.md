@@ -1,4 +1,4 @@
-# Documentation for SSE
+# Documentation
 
 ## Simple SQL Engine (SSE)
 

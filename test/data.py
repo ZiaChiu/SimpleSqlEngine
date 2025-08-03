@@ -31,6 +31,22 @@ engine.close()
 #
 # d.line_plot(kind="scatter")
 
+def test_demo():
+    assert 100 == 100
+
+# class TestDome:
+#
+#     def test_demo1(self):
+#         assert 11 == 11
+#
+#     def test_demo(self):
+#         assert 22 == 21
+class TestDome:
+
+    def test_demo1(self):
+        print('\n----测试用例执行-----------')
+        assert 11 == 11
+
 query = (
 SQLQueryBuilder("NetflixTVShowsAndMovies")
 .select("release_year","imdb_score")
@@ -47,13 +63,14 @@ SQLQueryBuilder("NetflixTVShowsAndMovies")
 )
 
 
-
+# UPDATE NetflixTVShowsAndMovies SET "release_year" = 2026,
+# "imdb_score" = 8.5 WHERE "index" IS NULL;
 print(query1)
 
 
-d = DataOutput("./my_database.db", query1,"results4")
-c = d.get_csv()
-print(c)
+# d = DataOutput("./my_database.db", query1,"results4")
+# c = d.get_csv()
+# print(c)
 
 
 # def test_plt():
